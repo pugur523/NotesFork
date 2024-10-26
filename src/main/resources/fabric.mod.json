@@ -1,9 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "notes",
+  "id": "${id}",
   "version": "${version}",
-
-  "name": "Notes",
+  "name": "${name}",
   "description": "Clientside in-game notepad.",
   "authors": [
     "ChaosTheDude"
