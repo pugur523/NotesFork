@@ -19,6 +19,9 @@
   "entrypoints": {
     "client": [
       "com.chaosthedude.notes.Notes"
+    ],
+    "modmenu": [
+      "com.chaosthedude.notes.compat.modmenu.ModMenuImpl"
     ]
   },
   "mixins": [

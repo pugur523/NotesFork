@@ -2,6 +2,7 @@ package com.chaosthedude.notes.mixins;
 
 import java.util.List;
 
+import com.chaosthedude.notes.config.Configs;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -10,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.chaosthedude.notes.Notes;
-import com.chaosthedude.notes.config.NotesConfig;
 import com.chaosthedude.notes.util.RenderUtils;
 
 import net.fabricmc.api.EnvType;
@@ -35,8 +35,8 @@ public class HUDMixin {
 			if (Notes.pinnedNote != null && Notes.pinnedNote.isValidScope()) {
 				Notes.pinnedNote.update();
 				
-				final int maxWidth = MathHelper.floor(client.getWindow().getScaledWidth() * NotesConfig.pinnedWidthScale);
-				final int maxHeight = MathHelper.floor(client.getWindow().getScaledHeight() * NotesConfig.pinnedHeightScale);
+				final int maxWidth = MathHelper.floor(client.getWindow().getScaledWidth() * Configs.Generic.PINNED_WIDTH_SCALE.getDoubleValue());
+				final int maxHeight = MathHelper.floor(client.getWindow().getScaledHeight() * Configs.Generic.PINNED_HEIGHT_SCALE.getDoubleValue());
 	
 				final String text = Notes.pinnedNote.getFilteredText();
 				final List<String> widthSplitLines = RenderUtils.splitStringToWidth(text, maxWidth);
@@ -51,8 +51,8 @@ public class HUDMixin {
 				final int renderWidth = RenderUtils.getSplitStringWidth(lines, maxWidth);
 				final int renderHeight = RenderUtils.getSplitStringHeight(lines, maxHeight);
 
-				final int renderX = RenderUtils.getPinnedNoteX(NotesConfig.pinnedNotePosition, renderWidth);
-				final int renderY = RenderUtils.getPinnedNoteY(NotesConfig.pinnedNotePosition, renderHeight);
+				final int renderX = RenderUtils.getPinnedNoteX(Configs.Generic.PINNED_NOTE_POSITION.getStringValue(), renderWidth);
+				final int renderY = RenderUtils.getPinnedNoteY(Configs.Generic.PINNED_NOTE_POSITION.getStringValue(), renderHeight);
 	
 				final int opacity = (int) (255.0F * client.options.getTextBackgroundOpacity().getValue());
 	

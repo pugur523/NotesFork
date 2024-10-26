@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.chaosthedude.notes.Notes;
-import com.chaosthedude.notes.config.NotesConfig;
+import com.chaosthedude.notes.config.Configs;
 import com.chaosthedude.notes.note.Note;
 import com.chaosthedude.notes.util.RenderUtils;
 import com.chaosthedude.notes.util.StringUtils;
@@ -96,7 +96,7 @@ public class DisplayNoteScreen extends Screen {
 
 	private void setupPages() {
 		if (note != null) {
-			final List<String> lines = NotesConfig.wrapNote ? RenderUtils.splitStringToWidth(note.getFilteredText(), width - 200) : StringUtils.wrapToWidth(note.getFilteredText(), width - 200);
+			final List<String> lines = Configs.Generic.WRAP_NOTE.getBooleanValue() ? RenderUtils.splitStringToWidth(note.getFilteredText(), width - 200) : StringUtils.wrapToWidth(note.getFilteredText(), width - 200);
 			pages = new ArrayList<String>();
 			int lineCount = 0;
 			String page = "";

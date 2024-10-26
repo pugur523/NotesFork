@@ -15,7 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.chaosthedude.notes.Notes;
-import com.chaosthedude.notes.config.NotesConfig;
+import com.chaosthedude.notes.config.Configs;
 import com.chaosthedude.notes.util.FileUtils;
 import com.chaosthedude.notes.util.RenderUtils;
 import com.chaosthedude.notes.util.StringUtils;
@@ -27,7 +27,7 @@ import net.minecraft.client.resource.language.I18n;
 
 public class Note {
 
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(NotesConfig.dateFormat);
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(Configs.Generic.DATE_FORMAT.getStringValue());
 	private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
 	private static final TextRenderer TEXT_RENDERER = CLIENT.textRenderer;
 

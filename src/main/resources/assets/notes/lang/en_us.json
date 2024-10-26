@@ -39,5 +39,12 @@
     "_comment": "STRINGS",
     "notes.confirmDelete": "Delete this note?",
     "notes.lastModified": "Last Modified",
-    "notes.saveAs": "Will be saved as %s"
+    "notes.saveAs": "Will be saved as %s",
+
+    "notes.label.pinned_note_position.center_right": "Center Right",
+    "notes.label.pinned_note_position.center_left": "Center Left",
+    "notes.label.pinned_note_position.top_right": "Top Right",
+    "notes.label.pinned_note_position.top_left": "Top Left",
+    "notes.label.pinned_note_position.bottom_right": "Bottom Right",
+    "notes.label.pinned_note_position.bottom_left": "Bottom Left"
 }

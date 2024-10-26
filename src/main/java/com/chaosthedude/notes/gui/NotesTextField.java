@@ -1,8 +1,11 @@
 package com.chaosthedude.notes.gui;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
+import com.chaosthedude.notes.config.Configs;
 import org.lwjgl.glfw.GLFW;
 
 import com.chaosthedude.notes.util.StringUtils;
@@ -42,6 +45,9 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 	private int selectionPos;
 	private int enabledColor = 14737632;
 	private int disabledColor = 7368816;
+
+	private Deque<String> undoStack = new ArrayDeque<>();
+	private Deque<String> redoStack = new ArrayDeque<>();
 
 	public NotesTextField(TextRenderer fontRenderer, int x, int y, int width, int height, int margin) {
 		super(x, y, width, height, Text.literal(""));
@@ -83,7 +89,8 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 				}
 				return true;
 			} else if (keyCode == GLFW.GLFW_KEY_TAB) {
-				insert("    ");
+				insert(" ".repeat(Configs.Generic.TAB_INDENT_SCALE.getIntegerValue()));
+				// insert("    ");
 				return true;
 			} else if (keyCode == GLFW.GLFW_KEY_KP_ENTER) {
 				insertNewLine();
@@ -142,6 +149,12 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 				if (moveRight) {
 					moveRight();
 				}
+				return true;
+			} else if (Screen.hasControlDown() && keyCode == GLFW.GLFW_KEY_Z) {
+				undo();
+				return true;
+			} else if (Screen.hasControlDown() && keyCode == GLFW.GLFW_KEY_Y) {
+				redo();
 				return true;
 			}
 		}
@@ -351,6 +364,8 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 	}
 
 	public void insert(String newText) {
+		saveStateForUndo();
+		clearRedoStack();
 		deleteSelectedText();
 
 		final String finalText = StringUtils.insertStringAt(StringUtils.filter(newText), text, cursorPos);
@@ -363,6 +378,8 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 	}
 
 	private void deleteNext() {
+		saveStateForUndo();
+		clearRedoStack();
 		final String currentText = text;
 		if (!atEndOfNote() && !currentText.isEmpty()) {
 			final StringBuilder sb = new StringBuilder(currentText);
@@ -373,6 +390,8 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 	}
 
 	private void deletePrev() {
+		saveStateForUndo();
+		clearRedoStack();
 		final String currentText = text;
 		if (!atBeginningOfNote() && !currentText.isEmpty()) {
 			final StringBuilder sb = new StringBuilder(currentText);
@@ -721,6 +740,29 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 
 	@Override
 	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	}
+
+	private void saveStateForUndo() {
+		undoStack.push(text);
+	}
+
+	private void clearRedoStack() {
+		// Clear redo stack whenever a new action is performed
+		redoStack.clear();
+	}
+
+	public void undo() {
+		if (!undoStack.isEmpty()) {
+			redoStack.push(text);
+			setText(undoStack.pop());
+		}
+	}
+
+	public void redo() {
+		if (!redoStack.isEmpty()) {
+			undoStack.push(text);
+			setText(redoStack.pop());
+		}
 	}
 
 }

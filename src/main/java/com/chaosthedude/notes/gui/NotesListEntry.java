@@ -1,7 +1,7 @@
 package com.chaosthedude.notes.gui;
 
 import com.chaosthedude.notes.Notes;
-import com.chaosthedude.notes.config.NotesConfig;
+import com.chaosthedude.notes.config.Configs;
 import com.chaosthedude.notes.note.Note;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -61,7 +61,7 @@ public class NotesListEntry extends AlwaysSelectedEntryListWidget.Entry<NotesLis
 	}
 
 	public void editNote() {
-		if (NotesConfig.useInGameEditor || !note.tryOpenExternal()) {
+		if (Configs.Generic.USE_IN_GAME_EDITOR.getBooleanValue() || !note.tryOpenExternal()) {
 			client.setScreen(new EditNoteScreen(parentScreen, note));
 		}
 	}
@@ -73,7 +73,7 @@ public class NotesListEntry extends AlwaysSelectedEntryListWidget.Entry<NotesLis
 
 	public void loadNote() {
 		client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-		if (NotesConfig.useInGameViewer || !note.tryOpenExternal()) {
+		if (Configs.Generic.USE_IN_GAME_VIEWER.getBooleanValue() || !note.tryOpenExternal()) {
 			client.setScreen(new DisplayNoteScreen(parentScreen, note));
 		}
 	}
