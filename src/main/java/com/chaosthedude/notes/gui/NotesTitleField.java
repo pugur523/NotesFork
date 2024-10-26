@@ -125,12 +125,14 @@ public class NotesTitleField extends TextFieldWidget {
 		super.setMaxLength(length);
 		pseudoMaxLength = length;
 	}
-	
+
+	//#if MC <= 12001
 	@Override
 	public void tick() {
 		super.tick();
 		pseudoCursorCounter++;
 	}
+	//#endif
 	
 	@Override
 	public void setSelectionEnd(int position) {

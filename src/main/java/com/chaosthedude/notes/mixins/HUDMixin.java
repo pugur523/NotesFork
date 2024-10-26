@@ -22,14 +22,14 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-@Mixin(InGameHud.class)
+@Mixin(value = InGameHud.class, remap = false)
 public class HUDMixin {
 		
 	@Shadow
 	@Final
 	private MinecraftClient client;
 
-	@Inject(method = "render(Lnet/minecraft/client/gui/DrawContext;F)V", at = @At(value = "TAIL"))
+	@Inject(method = "render", at = @At(value = "TAIL"))
 	private void renderPinnedNote(DrawContext context, float tickDelta, CallbackInfo info) {
 		if (!client.options.hudHidden && (client.currentScreen == null || client.currentScreen instanceof ChatScreen)) {
 			if (Notes.pinnedNote != null && Notes.pinnedNote.isValidScope()) {

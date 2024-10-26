@@ -51,14 +51,20 @@ public class DisplayNoteScreen extends Screen {
 		nextButton.active = page < pages.size() - 1;
 	}
 
+	//#if MC >= 12001
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+		//#if MC >= 12002
+		//$$  renderBackground(context, mouseX, mouseY, partialTicks);
+		//#else
 		renderBackground(context);
+		//#endif
 		context.drawCenteredTextWithShadow(textRenderer, title.getString(), width / 2 + 60, 15, -1);
 		displayNote(context);
 
 		super.render(context, mouseX, mouseY, partialTicks);
 	}
+	//#endif
 
 	public void displayNote(DrawContext context) {
 		List<String> lines = RenderUtils.splitStringToWidth(pages.get(page), width - 200);

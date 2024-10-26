@@ -7,6 +7,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
+//#if MC <= 11904
+//$$ import net.minecraft.client.util.math.MatrixStack;
+//#endif
+
 @Environment(EnvType.CLIENT)
 public class NotesButton extends ButtonWidget {
 
@@ -15,7 +19,11 @@ public class NotesButton extends ButtonWidget {
 	}
 
 	@Override
+	//#if MC >= 12000
 	public void renderButton(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+	//#else
+	//$$ public void renderButton(MatrixStack context, int mouseX, int mouseY, float delta) {
+	//#endif
 		if (visible) {
 			MinecraftClient mc = MinecraftClient.getInstance();
 			float state = 2;
