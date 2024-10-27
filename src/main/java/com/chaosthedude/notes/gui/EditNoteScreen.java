@@ -53,7 +53,9 @@ public class EditNoteScreen extends Screen {
 
 	@Override
 	public void tick() {
+		//#if MC <= 12001
 		noteTitleField.tick();
+		//#endif
 		noteTextField.tick();
 
 		insertBiomeButton.active = insertChunkButton.active = insertCoordsButton.active = noteTextField.isFocused();

@@ -235,7 +235,11 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 	}
 
 	@Override
+	//#if MC >= 12002
+	//$$ public boolean mouseScrolled(double par1, double par2, double par3, double par4) {
+	//#else
 	public boolean mouseScrolled(double par1, double par2, double par3) {
+	//#endif
 		if (par3 < 0) {
 			incrementVisibleLines();
 			return true;
