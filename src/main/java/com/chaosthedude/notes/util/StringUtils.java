@@ -9,7 +9,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.registry.Registry;
+//#if MC >= 11900
 import net.minecraft.registry.RegistryKeys;
+//#endif
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
@@ -119,7 +121,11 @@ public final class StringUtils {
 	}
 	
 	private static Optional<? extends Registry<Biome>> getBiomeRegistry(World world) {
+		//#if MC >= 11900
 		return world.getRegistryManager().getOptional(RegistryKeys.BIOME);
+		//#else
+		//$$ return world.getRegistryManager().getOptional(Registry.BIOME_KEY);
+		//#endif
 	}
 
 	private static Optional<Identifier> getKeyForBiome(World world, Biome biome) {

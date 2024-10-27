@@ -1,6 +1,7 @@
 package com.chaosthedude.notes.note;
 
 import java.io.File;
+import java.util.Objects;
 
 import com.chaosthedude.notes.util.FileUtils;
 import com.chaosthedude.notes.util.StringUtils;
@@ -132,7 +133,11 @@ public class Scope {
 
 	public static String getWorldName() {
 		if (isLocal()) {
-			String[] result = StringUtils.filterFileName(CLIENT.getServer().getRunDirectory().getName()).split("~");
+			//#if MC < 12100
+			String[] result = StringUtils.filterFileName(Objects.requireNonNull(CLIENT.getServer()).getRunDirectory().getName()).split("~");
+			//#else
+			//$$ String[] result = StringUtils.filterFileName(String.valueOf(Objects.requireNonNull(CLIENT.getServer()).getRunDirectory().getName(0))).split("~");
+			//#endif
 			return StringUtils.filterFileName(result[result.length - 1]);
 		}
 

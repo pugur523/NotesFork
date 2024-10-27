@@ -13,6 +13,14 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
 
+//#if MC < 12000
+//$$ import net.minecraft.client.util.math.MatrixStack;
+//#endif
+//#if MC < 11900
+//$$ import net.minecraft.text.LiteralText;
+//$$ import net.minecraft.text.TranslatableText;
+//#endif
+
 @Environment(EnvType.CLIENT)
 public class EditNoteScreen extends Screen {
 
@@ -32,7 +40,11 @@ public class EditNoteScreen extends Screen {
 	private boolean setTextFieldFocused;
 
 	public EditNoteScreen(Screen parentScreen, Note note) {
+		//#if MC >= 11900
 		super(Text.literal(note != null ? I18n.translate("notes.editNote") : I18n.translate("notes.newNote")));
+		//#else
+		//$$ super(new LiteralText(note != null ? I18n.translate("notes.editNote") : I18n.translate("notes.newNote")));
+		//#endif
 		this.parentScreen = parentScreen;
 		if (note != null) {
 			this.note = note;
@@ -96,19 +108,37 @@ public class EditNoteScreen extends Screen {
 	}
 
 	@Override
+	//#if MC >= 12000
 	public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+	//#else
+	//$$ public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+	//#endif
 		//#if MC >= 12002
 		//$$  renderBackground(context, mouseX, mouseY, partialTicks);
-		//#else
+		//#elseif MC >= 12000
 		renderBackground(context);
+		//#else
+		//$$ renderBackground(stack);
 		//#endif
+
+		//#if MC >= 12000
 		context.drawCenteredTextWithShadow(textRenderer, title.getString(), width / 2 + 60, 15, 0xffffff);
 		context.drawCenteredTextWithShadow(textRenderer, I18n.translate("notes.saveAs", note.getUncollidingSaveName(note.getTitle())), width / 2 + 55, 65, 0x808080);
 		super.render(context, mouseX, mouseY, partialTicks);
+		//#else
+		//$$ drawCenteredTextWithShadow(stack, textRenderer, title.getString(), width / 2 + 60, 15, 0xffffff);
+		//$$ drawCenteredTextWithShadow(stack, textRenderer, I18n.translate("notes.saveAs", note.getUncollidingSaveName(note.getTitle())), width / 2 + 55, 65, 0x808080);
+		//$$ super.render(stack, mouseX, mouseY, partialTicks);
+		//#endif
 	}
 
 	private void setupButtons() {
+		//#if MC >= 11900
 		saveButton = addDrawableChild(new NotesButton(10, 40, 110, 20, Text.translatable("notes.save"), (onPress) -> {
+		//#else
+		//$$ saveButton = addDrawableChild(new NotesButton(10, 40, 110, 20, new TranslatableText("notes.save"), (onPress) -> {
+		//#endif
+
 			updateNote();
 			note.save();
 			client.setScreen(new DisplayNoteScreen(parentScreen, note));
@@ -116,29 +146,54 @@ public class EditNoteScreen extends Screen {
 				Notes.pinnedNote = note;
 			}
 		}));
+		//#if MC >= 11900
 		globalButton = addDrawableChild(new NotesButton(10, 65, 110, 20, Text.translatable("notes.global").append(Text.literal(": ").append(note.getScope() == Scope.GLOBAL ? Text.translatable("notes.on") : Text.translatable("notes.off"))), (onPress) -> {
+		//#else
+		//$$ globalButton = addDrawableChild(new NotesButton(10, 65, 110, 20, new TranslatableText("notes.global").append(new LiteralText(": ").append(note.getScope() == Scope.GLOBAL ? new TranslatableText("notes.on") : new TranslatableText("notes.off"))), (onPress) -> {
+		//#endif
 			if (scope == Scope.GLOBAL) {
 				scope = Scope.getCurrentScope();
 			} else {
 				scope = Scope.GLOBAL;
 			}
 
+			//#if MC >= 11900
 			globalButton.setMessage(Text.literal(I18n.translate("notes.global") + (scope == Scope.GLOBAL ? ": " + I18n.translate("notes.on") : ": " + I18n.translate("notes.off"))));
+			//#else
+			//$$ globalButton.setMessage(new LiteralText(I18n.translate("notes.global") + (scope == Scope.GLOBAL ? ": " + I18n.translate("notes.on") : ": " + I18n.translate("notes.off"))));
+			//#endif
+
 			updateNote();
 		}));
+		//#if MC >= 11900
 		insertBiomeButton = addDrawableChild(new NotesButton(10, 100, 110, 20, Text.translatable("notes.biome"), (onPress) -> {
+		//#else
+		//$$ insertBiomeButton = addDrawableChild(new NotesButton(10, 100, 110, 20, new TranslatableText("notes.biome"), (onPress) -> {
+		//#endif
 			insertBiome();
 			setTextFieldFocused = true;
 		}));
+		//#if MC >= 11900
 		insertChunkButton = addDrawableChild(new NotesButton(10, 125, 110, 20, Text.translatable("notes.chunk"), (onPress) -> {
+		//#else
+		//$$ insertChunkButton = addDrawableChild(new NotesButton(10, 125, 110, 20, new TranslatableText("notes.chunk"), (onPress) -> {
+		//#endif
 			insertChunk();
 			setTextFieldFocused = true;
 		}));
+		//#if MC >= 11900
 		insertCoordsButton = addDrawableChild(new NotesButton(10, 150, 110, 20, Text.translatable("notes.coordinates"), (onPress) -> {
+		//#else
+		//$$ insertCoordsButton = addDrawableChild(new NotesButton(10, 150, 110, 20, new TranslatableText("notes.coordinates"), (onPress) -> {
+		//#endif
 			insertCoords();
 			setTextFieldFocused = true;
 		}));
+		//#if MC >= 11900
 		cancelButton = addDrawableChild(new NotesButton(10, height - 30, 110, 20, Text.translatable("gui.cancel"), (onPress) -> {
+		//#else
+		//$$ cancelButton = addDrawableChild(new NotesButton(10, height - 30, 110, 20, new TranslatableText("gui.cancel"), (onPress) -> {
+		//#endif
 			client.setScreen(parentScreen);
 		}));
 
@@ -148,7 +203,11 @@ public class EditNoteScreen extends Screen {
 	}
 
 	private void setupTextFields() {
+		//#if MC >= 11900
 		noteTitleField = addDrawableChild(new NotesTitleField(textRenderer, 130, 40, width - 140, 20, Text.literal("")));
+		//#else
+		//$$ noteTitleField = addDrawableChild(new NotesTitleField(textRenderer, 130, 40, width - 140, 20, new LiteralText("")));
+		//#endif
 		noteTitleField.setText(note.getTitle());
 		addDrawableChild(noteTitleField);
 		noteTitleField.setFocused(true);

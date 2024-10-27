@@ -21,6 +21,10 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.util.math.MathHelper;
 
+//#if MC < 12000
+//$$ import net.minecraft.client.gui.screen.Screen;
+//#endif
+
 @Environment(EnvType.CLIENT)
 @Mixin(value = InGameHud.class, remap = false)
 public class HUDMixin {
@@ -53,11 +57,19 @@ public class HUDMixin {
 
 				final int renderX = RenderUtils.getPinnedNoteX(Configs.Generic.PINNED_NOTE_POSITION.getStringValue(), renderWidth);
 				final int renderY = RenderUtils.getPinnedNoteY(Configs.Generic.PINNED_NOTE_POSITION.getStringValue(), renderHeight);
-	
+
+				//#if MC >= 11900
 				final int opacity = (int) (255.0F * client.options.getTextBackgroundOpacity().getValue());
+				//#else
+				//$$ final int opacity = (int) (255.0F * client.options.getTextBackgroundOpacity(0.6f));
+				//#endif
 	
 				// Render opaque background with padding of 5 on each side
+				//#if MC >= 12000
 				context.fill(renderX - 5, renderY - 5, renderX + renderWidth + 5, renderY + renderHeight + 5, opacity << 24);
+				//#else
+				//$$ Screen.fill(context, renderX - 5, renderY - 5, renderX + renderWidth + 5, renderY + renderHeight + 5, opacity << 24);
+				//#endif
 
 				// Render note
 				RenderUtils.renderSplitString(context, lines, renderX, renderY, 0xffffff);

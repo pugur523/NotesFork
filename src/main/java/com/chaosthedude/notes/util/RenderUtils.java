@@ -41,7 +41,11 @@ public class RenderUtils {
 
 	public static void renderSplitString(DrawContext context, List<String> splitString, int x, int y, int color) {
 		for (String s : splitString) {
+			//#if MC >= 12000
 			context.drawTextWithShadow(CLIENT.textRenderer, s, x, y, color);
+			//#else
+			//$$ CLIENT.textRenderer.drawWithShadow(context, s, x, y, color);
+			//#endif
 			y += CLIENT.textRenderer.fontHeight;
 		}
 	}

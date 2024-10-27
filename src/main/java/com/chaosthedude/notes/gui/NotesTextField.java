@@ -26,6 +26,18 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
+//#if MC < 12000
+//$$ import net.minecraft.client.gui.screen.Screen;
+//$$ import net.minecraft.client.util.math.MatrixStack;
+//$$ import com.mojang.blaze3d.platform.GlStateManager;
+//$$ import com.mojang.blaze3d.systems.RenderSystem;
+//$$ import net.minecraft.client.gui.widget.TextFieldWidget;
+//#endif
+
+//#if MC < 11900
+//$$ import net.minecraft.text.LiteralText;
+//#endif
+
 @Environment(EnvType.CLIENT)
 public class NotesTextField extends ClickableWidget implements Drawable, Element {
 
@@ -50,7 +62,11 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 	private Deque<String> redoStack = new ArrayDeque<>();
 
 	public NotesTextField(TextRenderer fontRenderer, int x, int y, int width, int height, int margin) {
+		//#if MC >= 11900
 		super(x, y, width, height, Text.literal(""));
+		//#else
+		//$$ super(x, y, width, height, new LiteralText(""));
+		//#endif
 		this.fontRenderer = fontRenderer;
 		this.margin = margin;
 
@@ -163,23 +179,42 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 	
 	@Override
 	public boolean charTyped(char typedChar, int p_charTyped_2_) {
-	      if (isFocused()) {
-	         if (SharedConstants.isValidChar(typedChar)) {
-	            if (this.isEnabled) {
-	               insert(Character.toString(typedChar));
-	               updateVisibleLines();
-	            }
+		if (isFocused()) {
 
-	            return true;
-	         }
-	      }
-	      return false;
-	   }
+			//#if MC < 12006
+			if (SharedConstants.isValidChar(typedChar)) {
+			//#else
+			//$$ if (isAllowedCharacter(typedChar)) {
+			//#endif
+				if (this.isEnabled) {
+					insert(Character.toString(typedChar));
+					updateVisibleLines();
+				}
+
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isAllowedCharacter(char c) {
+		return c != 167 && c >= ' ' && c != 127;
+	}
 
 	@Override
+	//#if MC >= 12000
 	public void renderButton(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+	//#else
+	//$$ public void renderButton(MatrixStack context, int mouseX, int mouseY, float partialTicks) {
+	//#endif
 		final int color = (int) (255.0F * 0.55f);
+		//#if MC >= 12000
 		context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), color / 2 << 24);
+		//#elseif MC >= 11900
+		//$$ Screen.fill(context, getX(), getY(), getX() + getWidth(), getY() + getHeight(), color / 2 << 24);
+		//#else
+		//$$ Screen.fill(context, x, y, x + getWidth(), y + getHeight(), color / 2 << 24);
+		//#endif
 
 		renderVisibleText(context);
 		renderCursor(context);
@@ -195,8 +230,13 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 
 		if (isFocused() && isWithinBounds) {
 			if (mouseButton == 0) {
+				//#if MC >= 11900
 				final int relativeMouseX = (int) mouseX - getX() - margin;
 				final int relativeMouseY = (int) mouseY - getY() - margin;
+				//#else
+				//$$ final int relativeMouseX = (int) mouseX - x - margin;
+				//$$ final int relativeMouseY = (int) mouseY - y - margin;
+				//#endif
 				final int y = MathHelper.clamp((relativeMouseY / fontRenderer.fontHeight) + topVisibleLine, 0, getFinalLineIndex());
 				final int x = fontRenderer.trimToWidth(getLine(y), relativeMouseX, false).length();
 
@@ -216,8 +256,13 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 
 		if (isFocused() && isWithinBounds) {
 			if (state == 0) {
+				//#if MC >= 11900
 				final int relativeMouseX = (int) mouseX - getX() - margin;
 				final int relativeMouseY = (int) mouseY - getY() - margin;
+				//#else
+				//$$ final int relativeMouseX = (int) mouseX - x - margin;
+				//$$ final int relativeMouseY = (int) mouseY - y - margin;
+				//#endif
 				final int y = MathHelper.clamp((relativeMouseY / fontRenderer.fontHeight) + topVisibleLine, 0, getFinalLineIndex());
 				final int x = fontRenderer.trimToWidth(getLine(y), relativeMouseX, false).length();
 
@@ -330,7 +375,11 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 	}
 
 	public boolean isWithinBounds(double mouseX, double mouseY) {
+		//#if MC >= 11900
 		return mouseX >= getX() && mouseX < getX() + getWidth() && mouseY >= getY() && mouseY < getY() + getHeight();
+		//#else
+		//$$ return mouseX >= x && mouseX < x + getWidth() && mouseY >= y && mouseY < y + getHeight();
+		//#endif
 	}
 
 	public boolean atBeginningOfLine() {
@@ -641,7 +690,11 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 		return "";
 	}
 
+	//#if MC >= 12000
 	private void drawSelectionBox(DrawContext context, int startX, int startY, int endX, int endY) {
+	//#else
+	//$$ private void drawSelectionBox(MatrixStack matrixStack, int startX, int startY, int endX, int endY) {
+	//#endif
 		if (startX < endX) {
 			int i = startX;
 			startX = endX;
@@ -654,6 +707,7 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 			endY = j;
 		}
 
+		//#if MC >= 11900
 		if (endX > getX() + getWidth()) {
 			endX = getX() + getWidth();
 		}
@@ -661,11 +715,31 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 		if (startX > getX() + getWidth()) {
 			startX = getX() + getWidth();
 		}
+		//#else
+		//$$ if (endX > x + getWidth()) {
+		//$$	endX = x + getWidth();
+		//$$ }
+		//$$
+		//$$ 	if (startX > x + getWidth()) {
+		//$$ 	startX = x + getWidth();
+		//$$ }
+		//#endif
 
+		//#if MC >= 12000
 		context.fill(RenderLayer.getGuiTextHighlight(), startX, startY, endX, endY, -16776961);
+		//#else
+		//$$ RenderSystem.enableColorLogicOp();
+		//$$ RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
+		//$$ TextFieldWidget.fill(matrixStack, startX, startY, endX, endY, -16776961);
+		//$$ RenderSystem.disableColorLogicOp();
+		//#endif
 	}
 
+	//#if MC >= 12000
 	private void renderSelectionBox(DrawContext context, int y, int renderY, String line) {
+	//#else
+	//$$ private void renderSelectionBox(MatrixStack context, int y, int renderY, String line) {
+	//#endif
 		if (hasSelectionOnLine(y)) {
 			final String absoluteLine = getLine(y);
 			int count = 0;
@@ -696,54 +770,109 @@ public class NotesTextField extends ClickableWidget implements Drawable, Element
 				selectionPos = -1;
 			} else {
 				final String selection = absoluteLine.substring(start, end);
+				//#if MC >= 11900
 				final int startX = getX() + margin + fontRenderer.getWidth(absoluteLine.substring(0, start));
+				//#else
+				//$$ final int startX = x + margin + fontRenderer.getWidth(absoluteLine.substring(0, start));
+				//#endif
 				final int endX = startX + fontRenderer.getWidth(selection);
 				drawSelectionBox(context, startX, renderY, endX, renderY + fontRenderer.fontHeight);
 			}
 		}
 	}
 
+	//#if MC >= 12000
 	private void renderVisibleText(DrawContext context) {
+	//#else
+	//$$ private void renderVisibleText(MatrixStack stack) {
+	//#endif
+		//#if MC >= 11900
 		int renderY = getY() + margin;
+		//#else
+		//$$ int renderY = y + margin;
+		//#endif
 		int y = topVisibleLine;
 		for (String line : getVisibleLines()) {
+			//#if MC >= 12000
 			context.drawTextWithShadow(fontRenderer, line, getX() + margin, renderY, 14737632);
 			renderSelectionBox(context, y, renderY, line);
+			//#elseif MC >= 11900
+			//$$ fontRenderer.drawWithShadow(stack, line, getX() + margin, renderY, 14737632);
+			//$$ renderSelectionBox(stack, y, renderY, line);
+			//#else
+			//$$ fontRenderer.drawWithShadow(stack, line, x + margin, renderY, 14737632);
+			//$$ renderSelectionBox(stack, y, renderY, line);
+			//#endif
 
 			renderY += fontRenderer.fontHeight;
 			y++;
 		}
 	}
 
+	//#if MC >= 12000
 	private void renderCursor(DrawContext context) {
+	//#else
+	//$$ private void renderCursor(MatrixStack MatrixStack) {
+	//#endif
 		final boolean shouldDisplayCursor = isFocused() && cursorCounter / 6 % 2 == 0 && cursorIsValid();
 		if (shouldDisplayCursor) {
 			final String line = getCurrentLine();
+			//#if MC >= 11900
 			final int renderCursorX = getX() + margin + fontRenderer.getWidth(line.substring(0, MathHelper.clamp(getCursorX(), 0, line.length())));
 			final int renderCursorY = getY() + margin + (getRenderSafeCursorY() * fontRenderer.fontHeight);
+			//#else
+			//$$ final int renderCursorX = x + margin + fontRenderer.getWidth(line.substring(0, MathHelper.clamp(getCursorX(), 0, line.length())));
+			//$$ final int renderCursorY = y + margin + (getRenderSafeCursorY() * fontRenderer.fontHeight);
+			//#endif
 
+			//#if MC >= 12000
 			context.fill(renderCursorX, renderCursorY - 1, renderCursorX + 1, renderCursorY + fontRenderer.fontHeight + 1, -3092272);
+			//#else
+			//$$ Screen.fill(MatrixStack, renderCursorX, renderCursorY - 1, renderCursorX + 1, renderCursorY + fontRenderer.fontHeight + 1, -3092272);
+			//#endif
 		}
 	}
 
+	//#if MC >= 12000
 	private void renderScrollBar(DrawContext context) {
+	//#else
+	//$$ private void renderScrollBar(MatrixStack MatrixStack) {
+	//#endif
 		if (needsScrollBar()) {
 			final List<String> lines = toLines();
 			final int effectiveHeight = getHeight() - (margin / 2);
 			final int scrollBarHeight = MathHelper.floor(effectiveHeight * ((double) getVisibleLineCount() / lines.size()));
+			//#if MC >= 11900
 			int scrollBarTop = getY() + (margin / 4) + MathHelper.floor(((double) topVisibleLine / lines.size()) * effectiveHeight);
+			//#else
+			//$$ int scrollBarTop = y + (margin / 4) + MathHelper.floor(((double) topVisibleLine / lines.size()) * effectiveHeight);
+			//#endif
 
+			//#if MC >= 11900
 			final int diff = (scrollBarTop + scrollBarHeight) - (getY() + getHeight());
+			//#else
+			//$$ final int diff = (scrollBarTop + scrollBarHeight) - (y + getHeight());
+			//#endif
 			if (diff > 0) {
 				scrollBarTop -= diff;
 			}
 
+			//#if MC >= 12000
 			context.fill(getX() + getWidth() - (margin * 3 / 4), scrollBarTop, getX() + getWidth() - (margin / 4), scrollBarTop + scrollBarHeight, -3092272);
+			//#elseif MC >= 11900
+			//$$ Screen.fill(MatrixStack, getX() + getWidth() - (margin * 3 / 4), scrollBarTop, getX() + getWidth() - (margin / 4), scrollBarTop + scrollBarHeight, -3092272);
+			//#else
+			//$$ Screen.fill(MatrixStack, x + getWidth() - (margin * 3 / 4), scrollBarTop, x + getWidth() - (margin / 4), scrollBarTop + scrollBarHeight, -3092272);
+			//#endif
 		}
 	}
 
 	@Override
+	//#if MC >= 11900
 	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	//#else
+	//$$ public void appendNarrations(NarrationMessageBuilder builder) {
+	//#endif
 	}
 
 	private void saveStateForUndo() {

@@ -17,6 +17,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
+//#if MC < 11900
+//$$ import net.minecraft.text.TranslatableText;
+//$$ import net.minecraft.text.LiteralText;
+//#endif
+
 @Environment(EnvType.CLIENT)
 public class NotesListEntry extends AlwaysSelectedEntryListWidget.Entry<NotesListEntry> {
 
@@ -35,6 +40,7 @@ public class NotesListEntry extends AlwaysSelectedEntryListWidget.Entry<NotesLis
 
 	@Override
 	public void render(DrawContext context, int par1, int par2, int par3, int par4, int par5, int par6, int par7, boolean par8, float par9) {
+		//#if MC >= 12000
 		context.drawText(client.textRenderer, note.getTitle(), par3 + 1, par2 + 1, 0xffffff, false);
 		context.drawText(client.textRenderer, note.getScope().format(), par3 + 4 + client.textRenderer.getWidth(note.getTitle()), par2 + 1, 0x808080, false);
 		if (note.isPinned()) {
@@ -43,6 +49,16 @@ public class NotesListEntry extends AlwaysSelectedEntryListWidget.Entry<NotesLis
 		context.drawText(client.textRenderer, note.getTitle(), par3 + 1, par2 + 1, 0xffffff, false);
 		context.drawText(client.textRenderer, note.getPreview(MathHelper.floor(notesList.getRowWidth() * 0.9)), par3 + 1, par2 + client.textRenderer.fontHeight + 3, 0x808080, false);
 		context.drawText(client.textRenderer, note.getLastModifiedString(), par3 + 1, par2 + client.textRenderer.fontHeight + 14, 0x808080, false);
+		//#else
+		//$$ client.textRenderer.draw(context, note.getTitle(), par3 + 1, par2 + 1, 0xffffff);
+		//$$ client.textRenderer.draw(context, note.getScope().format(), par3 + 4 + client.textRenderer.getWidth(note.getTitle()), par2 + 1, 0x808080);
+		//$$ if (note.isPinned()) {
+		//$$ 	client.textRenderer.draw(context, I18n.translate("notes.pinned"), par3 + 4 + client.textRenderer.getWidth(note.getTitle()) + client.textRenderer.getWidth(note.getScope().format()) + 4, par2 + 1, 0xffffff);
+		//$$ }
+		//$$ client.textRenderer.draw(context, note.getTitle(), par3 + 1, par2 + 1, 0xffffff);
+		//$$ client.textRenderer.draw(context, note.getPreview(MathHelper.floor(notesList.getRowWidth() * 0.9)), par3 + 1, par2 + client.textRenderer.fontHeight + 3, 0x808080);
+		//$$ client.textRenderer.draw(context, note.getLastModifiedString(), par3 + 1, par2 + client.textRenderer.fontHeight + 14, 0x808080);
+		//#endif
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 	
@@ -102,12 +118,20 @@ public class NotesListEntry extends AlwaysSelectedEntryListWidget.Entry<NotesLis
 			}
 
 			NotesListEntry.this.client.setScreen(NotesListEntry.this.parentScreen);
+		//#if MC >= 11900
 		}, Text.translatable("notes.confirmDelete"), Text.literal(note.getTitle())));
+		//#else
+		//$$ }, new TranslatableText("notes.confirmDelete"), new LiteralText(note.getTitle())));
+		//#endif
 	}
 
 	@Override
 	public Text getNarration() {
+		//#if MC >= 11900
 		return Text.literal(note.getTitle());
+		//#else
+		//$$ return new LiteralText(note.getTitle());
+		//#endif
 	}
 
 }
