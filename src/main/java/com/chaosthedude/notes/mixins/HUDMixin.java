@@ -26,7 +26,7 @@ import net.minecraft.util.math.MathHelper;
 //#endif
 
 @Environment(EnvType.CLIENT)
-@Mixin(value = InGameHud.class, remap = false)
+@Mixin(InGameHud.class)
 public class HUDMixin {
 		
 	@Shadow
